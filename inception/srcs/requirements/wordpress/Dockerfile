@@ -19,12 +19,20 @@ RUN apk update && apk upgrade && apk add --no-cache \
     php${PHP_VERSION}-xml \
     php${PHP_VERSION}-zip \
     php${PHP_VERSION}-redis \
+    php${PHP_VERSION}-phar \
     wget \
-    unzip && \
+    unzip \
+    curl && \
     sed -i "s|listen = 127.0.0.1:9000|listen = 9000|g" /etc/php${PHP_VERSION}/php-fpm.d/www.conf && \
     sed -i "s|;listen.owner = nobody|listen.owner = nobody|g" /etc/php${PHP_VERSION}/php-fpm.d/www.conf && \
     sed -i "s|;listen.group = nobody|listen.group = nobody|g" /etc/php${PHP_VERSION}/php-fpm.d/www.conf && \
     rm -f /var/cache/apk/*
+
+# Install WP-CLI
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp && \
+    wp --info
 
 WORKDIR /var/www
 
@@ -34,8 +42,12 @@ RUN wget https://wordpress.org/latest.zip && \
     rm -rf wordpress latest.zip
 
 COPY ./requirements/wordpress/conf/wp-config-create.sh .
+COPY ./requirements/wordpress/conf/wp-entrypoint.sh /usr/local/bin/
 
 RUN sh wp-config-create.sh && rm wp-config-create.sh && \
     chmod -R 0777 wp-content/
 
-CMD ["/bin/sh", "-c", "/usr/sbin/php-fpm81 -F"]
+RUN chmod +x /usr/local/bin/wp-entrypoint.sh
+
+ENTRYPOINT ["wp-entrypoint.sh"]
+
