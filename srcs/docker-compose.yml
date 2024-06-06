@@ -60,11 +60,6 @@ services:
         condition: service_healthy
     env_file:
       - .env
-          #environment:
-          #DB_NAME: ${DB_NAME}
-          #DB_USER: ${DB_USER}
-          #DB_PASS: ${DB_PASS}
-          #DB_HOST: mariadb
     networks:
       - inception
     volumes:
@@ -92,6 +87,7 @@ services:
     container_name: vsftpd
     ports:
       - "21:21"
+      - "21000-21110:21000-21110"
     volumes:
       - wp-volume:/var/www/
     networks:
@@ -130,7 +126,6 @@ services:
     networks:
       - inception
     volumes:
-      #- filebrowser-volume:/srv
       - /:/srv
     restart: always
 

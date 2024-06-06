@@ -20,8 +20,6 @@ re: down
 clean: down
 	@printf "Cleaning configuration ${name}...\n"
 	@docker system prune -a
-	#@sudo rm -rf /home/${USER}/data/wordpress/*
-	#@sudo rm -rf /home/${USER}/data/mariadb/*
 
 fclean:
 	@printf "Total clean of all configurations docker\n"
@@ -31,9 +29,6 @@ fclean:
 	@docker system prune --all --force --volumes
 	@docker network prune --force		
 
-	#@docker stop $$(docker ps -qa)
-	#@docker system prune --all --force --volumes
-	#@docker network prune --force
 	@docker volume prune --force
 
 	@sudo rm -rf /home/${USER}/data/wordpress/*

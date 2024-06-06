@@ -7,14 +7,15 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
         # init database
         mysql_install_db --user=mysql --datadir=/var/lib/mysql --rpm
 
-        tfile=`mktemp`
+        #tfile=`mktemp`
+	tfile=$(mktemp)
         if [ ! -f "$tfile" ]; then
             exit 1
         fi
+
 fi
 
 if [ ! -d "/var/lib/mysql/${DB_NAME}" ]; then
-
         cat << EOF > /tmp/create_db.sql
 USE mysql;
 FLUSH PRIVILEGES;
@@ -30,5 +31,6 @@ FLUSH PRIVILEGES;
 EOF
         # run init.sql
         /usr/bin/mysqld --user=mysql --bootstrap < /tmp/create_db.sql
-        rm -f /tmp/create_db.sql
+       	rm -f /tmp/create_db.sql
 fi
+exec /usr/bin/mysqld --user=mysql --skip-log-error
